@@ -4,25 +4,15 @@ Stupidly small and simple database written in Python
 #  Introduction
 I've been curious about how databases work at a fundamental level for a while. You know; what make a database tick? How does the data get stored, what is needed to support multiple tables? How do you parse and execute a SQL statement? 
 
-Well, this is the start of a journey to see how far along this path I can get.
+Well, this is the start of a journey to see how far along this path I can get. I am also using Python because it's popular and I've not written anything this ambitious in Python before.
 
 # Approach
 
-I'm using *Database Internals* by Alex Petrov (https://www.databass.dev) as my main source.  I've taken a look at tinydb by Markus Siemens (https://github.com/msiemens/tinydb/tree/master) to see if this will give me a leg up.  However, tinydb is a No-SQL database and I'm interested in having a SQL interface. 
+I started using *Database Internals* by Alex Petrov (https://www.databass.dev) as my main source.  I've taken a look at tinydb by Markus Siemens (https://github.com/msiemens/tinydb/tree/master) to see if this will give me a leg up.  However, tinydb is a No-SQL database and I'm interested in having a SQL interface. Finally though, I've come across [Let's Build A Simple Database](https://cstack.github.io/db_tutorial/parts/part1.html), which starts with the REPL and that seems like a very good place to start.
 
-I think I'll start by implementing the Storage Engine. According to Petrov, the Storage Engine contains a few components:
+# REPL
 
-- Transaction Manager -- Schedules transactions and keeps the database in a consisent state
-- Lock Manager -- Locks the database objects for the running transactions
-- Access Methods (Storage Structures) -- These manage access and organize data on disk
-- Buffer Manager -- Caches data pages in memory
-- Recovery Manager -- Maintains the operation log and restores the system state in case of a failure.
+The REPL (Read, Eval, Print, Loop) will provide the foundation for starting on our SSASD (Stupidly Small and Simple Database). We'll need a main function that prints a prompt to the screen, reads the input and acts on it. 
 
-The cricital question is "What is the minimum need to support a single user accessing multiple tables?" 
+To run the repl, use `python repl/repl.py` from the project root directory
 
-# Storage Engine
-
-Some working assumptions and requirements:
-1. The database shall support a single user only
-1. The database shall use row-oriented data layout
-1. The database shall provide support for multiple tables
