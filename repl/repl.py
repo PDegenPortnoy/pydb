@@ -10,20 +10,16 @@ __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
 import sys
+from commands import Commands
 
-def main():
-  while True:
-    print(">> ", end = '')
-    sys.stdout.flush()
+class REPL:
+    def run(self):
+        while True:
+            self.print_prompt()
+            user_input = sys.stdin.readline().strip()
+            Commands().process(user_input)
+    
 
-    input = sys.stdin.readline().strip()
-    print(f"Command was '{input}'")
-
-    if input == 'exit':
-      break
-
-  print("Exiting...")
-
-
-if __name__ == "__main__":
-    main()
+    def print_prompt(self):
+        print(">> ", end = '')
+        sys.stdout.flush()
