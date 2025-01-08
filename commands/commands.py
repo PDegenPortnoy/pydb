@@ -12,10 +12,25 @@ __version__ = "0.0.1"
 import sys
 
 class Commands:
-    def process(self, user_input):
-        print(f"Command was '{user_input}'")
+    def process(self, user_input: str):
+        # print(f"Command was '{user_input}'")
 
-        if user_input == 'exit':
-            print("exiting...")
-            sys.exit()
+        if user_input.lower() == 'exit':
+            self.process_exit()
+        elif user_input.lower().startswith('select'):
+            self.process_select(user_input)
+        else:
+            self.process_unrecognized(user_input)
+
+    def process_exit(self) -> None:
+        print("exiting...")
+        sys.exit()
+
+
+    def process_select(self, user_input: str) -> None:
+        print(f"processing SELECT statement: `{user_input}`")
+
+
+    def process_unrecognized(self, user_input: str) -> None:
+        print(f"Unrecognized command: `{user_input}`")
 

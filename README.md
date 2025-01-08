@@ -16,3 +16,7 @@ The REPL (Read, Eval, Print, Loop) will provide the foundation for starting on o
 
 To run the repl, use `python main.py` from the project root directory
 
+# COMMANDS
+
+The Simple Database reference uses Sqlite, which uses a "." to indicate a meta command, such as `.table` or `.exit`. I don't think I want to do that. I would like to have a meta-table with table data so that one could do `SELECT * from db_tables` and `DESCRIBE <table_name` to get table details from the meta-table. Therefore, the Commands module can be simpler than the reference, which processes meta commands and SQL commands differently. 
+

@@ -13,14 +13,19 @@ import sys
 from commands import Commands
 
 class REPL:
-    def run():
+    def run() -> None:
+"""
+The 'while' loop for the REPL
+"""
         while True:
-            repl = REPL()
-            repl.print_prompt()
+            REPL().print_prompt()
             user_input = sys.stdin.readline().strip()
             Commands().process(user_input)
     
 
-    def print_prompt(self):
+    def print_prompt(self) -> None:
+"""
+Prints the command prompt.
+"""
         print(">> ", end = '')
         sys.stdout.flush()
