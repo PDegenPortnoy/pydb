@@ -13,9 +13,10 @@ import sys
 from commands import Commands
 
 class REPL:
-    def run(self):
+    def run():
         while True:
-            self.print_prompt()
+            repl = REPL()
+            repl.print_prompt()
             user_input = sys.stdin.readline().strip()
             Commands().process(user_input)
     

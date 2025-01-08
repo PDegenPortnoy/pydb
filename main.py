@@ -12,7 +12,7 @@ __version__ = "0.0.1"
 from repl import REPL
 
 def main():
-    REPL().run()
+    REPL.run()
 
 if __name__ == "__main__":
     main()
