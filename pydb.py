@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 main.py
 
@@ -9,10 +11,12 @@ __copyright__ = "Copyright 2025, PDP"
 __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
-from repl import REPL
+import sys
+sys.path.append('../')
+from repl import repl
 
 def main():
-    REPL.run()
+    repl.REPL.run()
 
 if __name__ == "__main__":
     main()
