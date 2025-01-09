@@ -41,6 +41,19 @@ class Table:
         print(f"Added row with id: {row.id}.")
 
 
+    def select(self, user_input: str) -> None:
+        """
+        Uses the default table root
+        """
+        print("|  ID  |  name      |  email        |")
+        print("|______|____________|_______________|")
+        node = self.root
+        while node.row != None:
+            print(f"{node.row.id}  | {node.row.user_name}   | {node.row.email} |")
+            node = node.child_node
+
+
+
     def _add_node(self, row: Row) -> int:
         if self.root.child_node == None:
             leaf = self.root

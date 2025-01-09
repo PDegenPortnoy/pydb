@@ -31,7 +31,8 @@ class Command:
 
 
     def process_select(self, user_input: str) -> None:
-        print(f"processing SELECT statement: `{user_input}`")
+        the_table = table.Table('default')
+        the_table.select(user_input)
 
 
     def process_insert(self, user_input: str) -> None:
