@@ -13,6 +13,9 @@ import sys
 from commands import table
 
 class Command:
+    def __init__(self):
+        self.table = table.Table('default')
+
     def process(self, user_input: str):
         # print(f"Command was '{user_input}'")
 
@@ -31,13 +34,11 @@ class Command:
 
 
     def process_select(self, user_input: str) -> None:
-        the_table = table.Table('default')
-        the_table.select(user_input)
+        self.table.select(user_input)
 
 
     def process_insert(self, user_input: str) -> None:
-        the_table = table.Table('default')
-        the_table.insert(user_input)
+        self.table.insert(user_input)
 
 
     def process_unrecognized(self, user_input: str) -> None:

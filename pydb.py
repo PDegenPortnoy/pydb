@@ -16,7 +16,7 @@ sys.path.append('../')
 from repl import repl
 
 def main():
-    repl.REPL.run()
+    repl.REPL().run()
 
 if __name__ == "__main__":
     main()

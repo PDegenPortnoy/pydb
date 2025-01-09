@@ -11,15 +11,18 @@ import sys
 from commands import command
 
 class REPL:
-    def run() -> None:
+    def __init__(self):
+        self.commander = command.Command()
+
+
+    def run(self) -> None:
         """
         The 'while' loop for the REPL
         """
         while True:
-            REPL().print_prompt()
+            self.print_prompt()
             user_input = sys.stdin.readline().strip()
-            commander = command.Command()
-            commander.process(user_input)
+            self.commander.process(user_input)
     
 
     def print_prompt(self) -> None:
