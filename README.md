@@ -16,9 +16,9 @@ The REPL (Read, Eval, Print, Loop) will provide the foundation for starting on o
 
 To run the repl, use `python main.py` from the project root directory
 
-# COMMANDS
+# Commands
 
-The Simple Database reference uses Sqlite, which uses a "." to indicate a meta command, such as `.table` or `.exit`. I don't think I want to do that. I would like to have a meta-table with table data so that one could do `SELECT * from db_tables` and `DESCRIBE <table_name` to get table details from the meta-table. Therefore, the Commands module can be simpler than the reference, which processes meta commands and SQL commands differently. 
+The Simple Database reference uses Sqlite, which uses a "." to indicate a meta command, such as `.table` or `.exit`. I don't think I want to do that. I would like to have a meta-table with table data so that one could do `SELECT * from db_tables` and `DESCRIBE <table_name>` to get table details from the meta-table. Therefore, the Commands module can be simpler than the reference, which processes meta commands and SQL commands differently. 
 
 First implementation will be of a hard-coded table `default` with the following schema:
 
@@ -26,5 +26,12 @@ First implementation will be of a hard-coded table `default` with the following 
     |____|________________|____________________ |
     | 1  | Peter          | peter@example.com   |
 
+## Requirements
+1. Insert (case-insentitive) will take 3 fields: ID, user\_name, email. 
+1. Select will display the rows that were Inserted
 
+### Next Steps
+1. Define a size for a Field
+1. Constrain data to the field size
+1. Display the size of the field in the SELECT output
 
