@@ -12,18 +12,12 @@ __copyright__ = "Copyright 2025, Peter Degen-Portnoy"
 __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
-from commands import row
-
-class RowNode:
-    def __init__(self, child_node, row):
-        self.child_node = child_node
-        self.row = row 
-
+from commands import row, row_node
 
 class Table:
     def __init__(self, table_name: str):
         self.table_name = table_name
-        self.root = RowNode(None, None)
+        self.root = row_node.RowNode(None, None)
 
 
     def insert(self, user_input: str) -> None:
@@ -40,7 +34,7 @@ class Table:
         """
         Uses the default table root
         """
-        print("|  ID   |  name      |  email        |")
+        print("|  ID   |    name    |    email      |")
         print("|_______|____________|_______________|")
         node = self.root
         while node.row != None:
@@ -55,9 +49,9 @@ class Table:
         else:
             leaf = self._get_leaf()
         leaf.row = row
-        leaf.child_node = RowNode(None, None)
+        leaf.child_node = row_node.RowNode(None, None)
 
-    def _get_leaf(self) -> RowNode:
+    def _get_leaf(self) -> row_node.RowNode:
         node = self.root
         while node.child_node != None:
             node = node.child_node

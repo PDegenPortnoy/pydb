@@ -36,10 +36,5 @@ class Row:
         ret_val += ' ' * padding_size
         return ret_val
             
-            
-        print_string = f"  {self.id}   "
-        return print_string
-
-
     def _get_field_by_name(self, field_name):
         return self.id  
