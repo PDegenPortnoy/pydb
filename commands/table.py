@@ -33,18 +33,18 @@ class Table:
         _, id, user_name, email = user_input.split()
         the_row = row.Row(id, user_name, email) 
         self._add_node(the_row)
-        print(f"Added row with id: {the_row.id}.")
+        print(f"Added row with id: {the_row.get_id()}.")
 
 
     def select(self, user_input: str) -> None:
         """
         Uses the default table root
         """
-        print("|  ID  |  name      |  email        |")
-        print("|______|____________|_______________|")
+        print("|  ID   |  name      |  email        |")
+        print("|_______|____________|_______________|")
         node = self.root
         while node.row != None:
-            print(f"|{node.row.format_id_for_printing()}| {node.row.user_name}  | {node.row.email} |")
+            print(f"|{node.row.format_id_for_printing('id')}| {node.row.user_name}  | {node.row.email} |")
             node = node.child_node
 
 
