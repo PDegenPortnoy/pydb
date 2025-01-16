@@ -1,5 +1,5 @@
 # pydb
-Stupidly small and simple database written in Python
+Small and simple database written in Python
 
 #  Introduction
 I've been curious about how databases work at a fundamental level for a while. You know; what make a database tick? How does the data get stored, what is needed to support multiple tables? How do you parse and execute a SQL statement? 
@@ -8,13 +8,19 @@ Well, this is the start of a journey to see how far along this path I can get. I
 
 # Approach
 
-I started using *Database Internals* by Alex Petrov (https://www.databass.dev) as my main source.  I've taken a look at [tinydb](https://github.com/msiemens/tinydb/tree/master) by Markus Siemens to see if this will give me a leg up.  However, tinydb is a No-SQL database and I'm interested in having a SQL interface. Finally though, I've come across [Let's Build A Simple Database](https://cstack.github.io/db_tutorial/parts/part1.html), which starts with the REPL and that seems like a very good place to start.
+I started using *[Database Internals](https://www.databass.dev)* by Alex Petrov as my main source. But starting from the Binary Tree / B-Tree / B-Tree+ level seemed like missing the point of understanding the higher order operations. It may be necessary to get all the way to the point of managing disk storage that concretely. It may require writing a C module.
 
-Following the latters approach, I am starting with a REPL and parsing commands directly. I'll eventually need a command parser. I'm doing this with objects because I've been working in OO for decades and it feels natural. I expect a lot of refactoring. 😃
+I then looked at [tinydb](https://github.com/msiemens/tinydb/tree/master) by Markus Siemens to see if this would give me a leg up.  However, tinydb is a No-SQL database and I'm interested in having a SQL interface. 
+
+Finally though, I've come across [Let's Build A Simple Database](https://cstack.github.io/db_tutorial/parts/part1.html), which starts with the REPL and that seems like a very good place to start.
+
+Following the "Let's Build A Simple Database" approach, I am starting with a REPL and parsing commands directly.
+
+I'll eventually need a command parser. I'm doing this with objects because I've been working in OO for decades and it feels natural. I expect a lot of refactoring. 😃
 
 # REPL
 
-The REPL (Read, Eval, Print, Loop) will provide the foundation for starting on our SSASD (Stupidly Small and Simple Database). We'll need a main function that prints a prompt to the screen, reads the input and acts on it. 
+The REPL (Read, Eval, Print, Loop) will provide the foundation for starting on our database. We'll need a main function that prints a prompt to the screen, reads the input and acts on it. 
 
 To run the repl, use `./pydb.py` from the project root directory
 
@@ -32,6 +38,16 @@ First implementation will be of a hard-coded table `default` with the following 
 1. Create will create a "users" table with 3 fields: ID, user\_name, email.
 1. Insert (case-insentitive) will take 3 fields: ID, user\_name, email. 
 1. Select will display the rows that were Inserted
+
+### Current Functionality
+Note: no punctuation. Currently displays a "db: " prompt and accepts the commands indicated below.
+
+Usage:
+
+1. insert ID Name Email
+1. select 
+1. exit
+
 
 ### Next Steps
 1. Define a size for a Field in Table Create (Done)

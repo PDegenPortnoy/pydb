@@ -21,9 +21,9 @@ class Command:
 
         if user_input.lower() == 'exit':
             self.process_exit()
-        elif user_input.lower().startswith('select'):
+        elif user_input.lower().startswith('select '):
             self.process_select(user_input)
-        elif user_input.lower().startswith('insert'):
+        elif user_input.lower().startswith('insert '):
             self.process_insert(user_input)
         else:
             self.process_unrecognized(user_input)
