@@ -35,3 +35,4 @@ First implementation will be of a hard-coded table `default` with the following 
 1. Constrain data to the field size
 1. Display the size of the field in the SELECT output
 
+In order to do this, I would like a dummy `Table.create()` that takes a `TableDefinition`. The `TableDefinition` contains the configuration information for each of the columns, called `Field`s. 

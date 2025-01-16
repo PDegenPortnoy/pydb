@@ -37,7 +37,7 @@ class Table:
         Expecting "insert <id> <user_name> <email>"
         """
         _, id, user_name, email = user_input.split()
-        users_table = self.tables[0]
+        users_table = self._get_table_by_name('users')
         the_row = row.Row(id, user_name, email) 
         self._add_node('users', the_row)
         print(f"Added row with id: {the_row.get_id()}.")
