@@ -14,7 +14,7 @@ from commands import table
 
 class Command:
     def __init__(self):
-        self.table = table.Table('default')
+        self.table = table.Table()
 
     def process(self, user_input: str):
         # print(f"Command was '{user_input}'")

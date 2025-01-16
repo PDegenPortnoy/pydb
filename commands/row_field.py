@@ -5,6 +5,8 @@ Defines a field that gets used in a Row.
 Attributes
 * field name -- string 
 * field size -- int
+* field_type -- data type of the field, e.g. int, str
+* value -- the value of the field in the row
 
 Note: Not imposing limits on size of field name or field size
 

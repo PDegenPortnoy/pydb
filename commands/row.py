@@ -2,6 +2,9 @@
 commands/row.py
 
 Defines a single Row. Rows are owned by a "RowNode", which is a node in a linkedList.
+Rows are comprised of RowFields, which own the attributes of field name, field size,
+field type, and the actual value of the field
+
 """
 
 __author__ = "Peter Degen-Portnoy"
