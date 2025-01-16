@@ -14,7 +14,7 @@ I started using *Database Internals* by Alex Petrov (https://www.databass.dev) a
 
 The REPL (Read, Eval, Print, Loop) will provide the foundation for starting on our SSASD (Stupidly Small and Simple Database). We'll need a main function that prints a prompt to the screen, reads the input and acts on it. 
 
-To run the repl, use `python main.py` from the project root directory
+To run the repl, use `./pydb.py` from the project root directory
 
 # Commands
 
