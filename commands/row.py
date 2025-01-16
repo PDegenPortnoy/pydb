@@ -15,20 +15,25 @@ __version__ = "0.0.1"
 from commands import row_field
 
 class Row:
-    def __init__(self, id: int, user_name: str, email: str):
-        self.id = row_field.RowField(
-                    field_name = 'id',
-                    field_size = 7, 
-                    field_type = int,
-                    value = id,
-                    )
-        self.user_name = user_name
-        self.email = email
+    def __init__(self, *row_fields: [row_field.RowField]):
+        self.row_fields = []
+        for rf in row_fields:
+            field = row_field.RowField(
+                        rf.field_name,
+                        rf.field_size,
+                        rf.field_type,
+                        rf.value,
+                        )
+            self.row_fields.append(field)
+
 
     def get_id(self):
-        return self.id.value
+        for rf in self.row_fields:
+            if rf.field_name == 'id':
+                return rf.value
+        return '-'
 
-    def format_id_for_printing(self, field_name):
+    def format_for_printing(self, field_name):
         row_field = self._get_field_by_name(field_name)
         ret_val = ""
         value_size = len(str(row_field.value)) 
@@ -37,7 +42,12 @@ class Row:
         ret_val += ' ' * padding_size
         ret_val += str(row_field.value)
         ret_val += ' ' * padding_size
+        if (row_field.field_size - value_size) % 2 != 0:
+            ret_val += ' '
         return ret_val
             
     def _get_field_by_name(self, field_name):
-        return self.id  
+        for row_field in self.row_fields:
+            if row_field.field_name == field_name:
+                return row_field
+        raise NameError(f"'{field_name}' not found")
