@@ -35,4 +35,4 @@ First implementation will be of a hard-coded table `default` with the following 
 1. Constrain data to the field size
 1. Display the size of the field in the SELECT output
 
-In order to do this, I would like a dummy `Table.create()` that takes a `TableDefinition`. The `TableDefinition` contains the configuration information for each of the columns, called `Field`s. 
+In order to do this, I would like a dummy `Table.create()` that takes a `TableDefinition`. The `TableDefinition` contains the configuration information for each of the columns, called `Field`s. When inserting a row, the row should check the input against the size and type limitations and throw an error if the input is invalid. When `SELECT` is called, it should use the table definition for output formatting. Currently, that information is duplicated in the `RowField`. Is it OK to have the duplication? There is a risk of two way binding if the `TableDefinition` contains those attributes (`field_name`, `field_size`, and `field_type`) and the `RowField` has the same information.
