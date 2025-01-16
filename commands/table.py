@@ -12,7 +12,8 @@ __copyright__ = "Copyright 2025, Peter Degen-Portnoy"
 __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
-from commands import row, row_node, table_definition, field, table_node
+from commands import row, row_node, row_field, table_definition, field, table_node
+
 class Table:
     def __init__(self, ):
         self.tables = []
@@ -38,7 +39,10 @@ class Table:
         """
         _, id, user_name, email = user_input.split()
         users_table = self._get_table_by_name('users')
-        the_row = row.Row(id, user_name, email) 
+        id_field = row_field.RowField('id', 7, int, id)
+        user_name_field = row_field.RowField('user_name', 16, str, user_name)
+        email_field = row_field.RowField('email', 32, str, email)
+        the_row = row.Row(id_field, user_name_field, email_field)
         self._add_node('users', the_row)
         print(f"Added row with id: {the_row.get_id()}.")
 
@@ -47,12 +51,30 @@ class Table:
         """
         Uses the default table root
         """
-        print("|  ID   |    name    |    email      |")
-        print("|_______|____________|_______________|")
         the_table = self._get_table_by_name('users') # TODO: This has to be parsed from input
         node = the_table.root
+
+        # Use the table definition to print the names of the fields and an underbar
+        header_row = ""
+        column_definitions = the_table.table_definition
+        for field in column_definitions.fields:
+            name_length = len(field['name'])
+            col_size = field['size']
+            padding = (col_size - name_length) // 2 # assumes the name with fit in the size
+            header_row += "|" + " " * padding
+            header_row += f"{field['name']}"
+            header_row += " " * padding
+            if (col_size - name_length) % 2 != 0:
+                header_row += " "
+        header_row += "|"
+        print(header_row)
+        divider_row = ""
+        for field in column_definitions.fields:
+            divider_row += "|" + "-" * field['size']
+        divider_row += "|"
+        print(divider_row)
         while node.row != None:
-            print(f"|{node.row.format_id_for_printing('id')}| {node.row.user_name}  | {node.row.email} |")
+            print(f"|{node.row.format_for_printing('id')}|{node.row.format_for_printing('user_name')}|{node.row.format_for_printing('email')}|")
             node = node.child_node
 
 
