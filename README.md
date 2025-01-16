@@ -10,7 +10,7 @@ Well, this is the start of a journey to see how far along this path I can get. I
 
 I started using *Database Internals* by Alex Petrov (https://www.databass.dev) as my main source.  I've taken a look at [tinydb](https://github.com/msiemens/tinydb/tree/master) by Markus Siemens to see if this will give me a leg up.  However, tinydb is a No-SQL database and I'm interested in having a SQL interface. Finally though, I've come across [Let's Build A Simple Database](https://cstack.github.io/db_tutorial/parts/part1.html), which starts with the REPL and that seems like a very good place to start.
 
-Following the latters approach, I am starting with a REPL and parsing commands directly. I'll eventually need a command parser. I'm doing this with objects because I've been working in OO for decades and it feels natrual. I expect a lot of refactoring. 😃 
+Following the latters approach, I am starting with a REPL and parsing commands directly. I'll eventually need a command parser. I'm doing this with objects because I've been working in OO for decades and it feels natural. I expect a lot of refactoring. 😃
 
 # REPL
 
