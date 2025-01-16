@@ -29,11 +29,12 @@ First implementation will be of a hard-coded table `default` with the following 
     | 1  | Peter          | peter@example.com   |
 
 ## Requirements
+1. Create will create a "users" table with 3 fields: ID, user\_name, email.
 1. Insert (case-insentitive) will take 3 fields: ID, user\_name, email. 
 1. Select will display the rows that were Inserted
 
 ### Next Steps
-1. Define a size for a Field
+1. Define a size for a Field in Table Create (Done)
 1. Constrain data to the field size
 1. Display the size of the field in the SELECT output
 	1. In order to do this, I would like a dummy `Table.create()` that takes a `TableDefinition`. The `TableDefinition` contains the configuration information for each of the columns, called `Field`s. 
