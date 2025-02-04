@@ -35,12 +35,12 @@ First implementation will be of a hard-coded table `default` with the following 
     | 1  | Peter          | peter@example.com   |
 
 ## Requirements
-1. Create will create a "users" table with 3 fields: ID, user\_name, email.
-1. Insert (case-insentitive) will take 3 fields: ID, user\_name, email. 
-1. Select will display the rows that were Inserted
+1. CREATE <table_name> (<column_name> <column_type>, ...) will create a table with the define table attributes
+1. INSERT INTO <table_name> (<column_name1>, ...) VALUES (<value1>, ...) will insert a record into the table with the provided values
+1. SELECT * FROM <table_name> will select all the records from the table listed
 
 ### Current Functionality
-Note: no punctuation. Currently displays a "db: " prompt and accepts the commands indicated below.
+Note: no punctuation. Currently displays a "db: " prompt and accepts the commands indicated below. The table is now defined at creation in the Table class. (That needs to be moved to the user.) Display uses the RowField attributes to display the row field value.
 
 Usage:
 
@@ -51,8 +51,10 @@ Usage:
 
 ### Next Steps
 1. Define a size for a Field in Table Create (Done)
+1. Build a SQL Parser to parse CREATE, INSERT, and SELECT statements
 1. Constrain data to the field size
 1. Display the size of the field in the SELECT output
 	1. In order to do this, I would like a dummy `Table.create()` that takes a `TableDefinition`. The `TableDefinition` contains the configuration information for each of the columns, called `Field`s. 
 1. Persist changes (Create, Insert, Update) to disk
 
+# 
