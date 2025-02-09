@@ -10,11 +10,11 @@ __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
 import sys
-from commands import table
+from commands.table import Table
 
 class Command:
     def __init__(self):
-        self.table = table.Table()
+        self.table = Table()
 
     def process(self, user_input: str):
         # print(f"Command was '{user_input}'")

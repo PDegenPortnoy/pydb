@@ -12,7 +12,12 @@ __copyright__ = "Copyright 2025, Peter Degen-Portnoy"
 __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
-from commands import row, row_node, row_field, table_definition, field, table_node
+from commands.row import Row
+from commands.row_node import RowNode
+from commands.row_field import RowField
+from commands.table_definition import TableDefinition
+from commands.field import Field
+from commands.table_node import TableNode
 
 class Table:
     def __init__(self, ):
@@ -22,15 +27,15 @@ class Table:
 
     def create(self, table_name, the_table_definition):
         # Hack to auto-define the Users table
-        id_field = field.Field("id", 7, int)
-        user_name_field = field.Field("user_name", 16, str)
-        email_field = field.Field("email", 32, str)
-        the_table_definition = table_definition.TableDefinition(
+        id_field = Field("id", 7, int)
+        user_name_field = Field("user_name", 16, str)
+        email_field = Field("email", 32, str)
+        the_table_definition = TableDefinition(
                                 id_field,
                                 user_name_field,
                                 email_field,
                                 )
-        self.tables.append(table_node.TableNode('users', the_table_definition))
+        self.tables.append(TableNode('users', the_table_definition))
         
 
     def insert(self, user_input: str) -> None:
@@ -39,10 +44,10 @@ class Table:
         """
         _, id, user_name, email = user_input.split()
         users_table = self._get_table_by_name('users')
-        id_field = row_field.RowField('id', 7, int, id)
-        user_name_field = row_field.RowField('user_name', 16, str, user_name)
-        email_field = row_field.RowField('email', 32, str, email)
-        the_row = row.Row(id_field, user_name_field, email_field)
+        id_field = RowField('id', 7, int, id)
+        user_name_field = RowField('user_name', 16, str, user_name)
+        email_field = RowField('email', 32, str, email)
+        the_row = Row(id_field, user_name_field, email_field)
         self._add_node('users', the_row)
         print(f"Added row with id: {the_row.get_id()}.")
 
@@ -79,16 +84,16 @@ class Table:
 
 
 
-    def _add_node(self, table_name, row: row.Row) -> int:
+    def _add_node(self, table_name, row: Row) -> int:
         the_table = self._get_table_by_name(table_name)
         if the_table.root.child_node == None:
             leaf = the_table.root
         else:
             leaf = self._get_leaf(the_table)
         leaf.row = row
-        leaf.child_node = row_node.RowNode(None, None)
+        leaf.child_node = RowNode(None, None)
 
-    def _get_leaf(self, the_table) -> row_node.RowNode:
+    def _get_leaf(self, the_table) -> RowNode:
         node = the_table.root 
         while node.child_node != None:
             node = node.child_node

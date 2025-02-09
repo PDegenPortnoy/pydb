@@ -12,13 +12,13 @@ __copyright__ = "Copyright 2025, Peter Degen-Portnoy"
 __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
-from commands import row_field
+from commands.row_field import RowField 
 
 class Row:
-    def __init__(self, *row_fields: [row_field.RowField]):
+    def __init__(self, *row_fields: [RowField]):
         self.row_fields = []
         for rf in row_fields:
-            field = row_field.RowField(
+            field = RowField(
                         rf.field_name,
                         rf.field_size,
                         rf.field_type,

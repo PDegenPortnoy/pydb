@@ -13,10 +13,10 @@ __version__ = "0.0.1"
 
 import sys
 sys.path.append('../')
-from repl import repl
+from repl.repl import REPL 
 
 def main():
-    repl.REPL().run()
+    REPL().run()
 
 if __name__ == "__main__":
     main()

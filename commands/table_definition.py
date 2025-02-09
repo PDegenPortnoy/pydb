@@ -11,8 +11,6 @@ __copyright__ = "Copyright 2025, Peter Degen-Portnoy"
 __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
-from commands import field
-
 class TableDefinition:
     def __init__(self, *column_definitions):
         self.fields = []

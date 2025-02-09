@@ -8,11 +8,11 @@ __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
 import sys
-from commands import command
+from commands.command import Command
 
 class REPL:
     def __init__(self):
-        self.commander = command.Command()
+        self.commander = Command()
 
 
     def run(self) -> None:
