@@ -35,6 +35,8 @@ class SQLParser:
             return self.parse_insert()
         elif token == 'SELECT':
             return self.parse_select()
+        elif token == 'EXIT':
+            return {'type': 'EXIT'}
         else:
             raise ValueError(f"Unsupported SQL statement: {token}")
 

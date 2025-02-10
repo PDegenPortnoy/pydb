@@ -14,26 +14,41 @@ from commands.table import Table
 
 class Command:
     def __init__(self):
-        self.table = Table()
+        # TODO: create the system table that holds table metadata
+        self.tables = None
 
     def process(self, user_input: str):
         # print(f"Command was '{user_input}'")
 
-        if user_input.lower() == 'exit':
+        command = SQLParser(user_input).parse()
+        
+        if command['type'] == 'EXIT':
             self.process_exit()
-        elif user_input.lower().startswith('select '):
-            self.process_select(user_input)
-        elif user_input.lower().startswith('insert '):
-            self.process_insert(user_input)
+        elif command['type'] == 'CREATE':
+             self.process_create(command)
+        elif command['type'] == 'INSERT':
+            self.process_insert(command)
+        elif command['type'] == 'SELECT':
+            self.process_select(command)
         else:
-            self.process_unrecognized(user_input)
+            self.process_unrecognized(command)
 
     def process_exit(self) -> None:
         print("exiting...")
         sys.exit()
 
 
-    def process_select(self, user_input: str) -> None:
+    def process_create(self, command: dict) -> None:
+        fields = []
+        for key, value in command['columns']:
+            default_size, data_type = self.get_size_and_type(value)
+            field = Field(key, default_size, data_type)
+            fields.append(field)
+        self.table.create(command['table'], fields)
+
+
+    def process_select(self, command: dict) -> None:
+        table = command['table']
         self.table.select(user_input)
 
 
@@ -43,4 +58,15 @@ class Command:
 
     def process_unrecognized(self, user_input: str) -> None:
         print(f"Unrecognized command: `{user_input}`")
+
+
+    def get_size_and_type(self, data_type_string: str) -> set:
+        if data_type_string == 'int':
+            return 32, int
+        elif data_type_string == 'str':
+            return 32, str
+        else:
+            raise ValueError(f"Unknown data type, {data_type_string}")
+
+
 

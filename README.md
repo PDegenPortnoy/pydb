@@ -16,7 +16,7 @@ Finally though, I've come across [Let's Build A Simple Database](https://cstack.
 
 Following the "Let's Build A Simple Database" approach, I am starting with a REPL and parsing commands directly.
 
-I'll eventually need a command parser. I'm doing this with objects because I've been working in OO for decades and it feels natural. I expect a lot of refactoring. 😃
+I've started working on a command parser, which is in the SQLParser class in `commands/sql_parser.py`. It currently parses the CREATE statement and returns a dict with the command, table, and a dict of columns. I just noticed that the RowField includes `field_size`, but the SQLParser is just looking for field name and type, so that needs to be addressed. First, however, is to get the SQLParser to parse the input line and return the dict to the Table.create() method and for the table to be dynamically created.
 
 # REPL
 
