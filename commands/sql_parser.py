@@ -20,8 +20,8 @@ class SQLParser:
 
     def tokenize(self):
         """ Split query into tokens """
-        token_pattern = re.compile(r'\w+|[(),=*]')
-        return token_pattern.findall(self.query.upper())
+        token_pattern = re.compile(r'\w+|[().,@=*]')
+        return token_pattern.findall(self.query.upper()) # TODO: This capitalizes the user input too, which we do not want. Move the upper() call further down the chain
 
 
     def parse(self):
@@ -42,7 +42,7 @@ class SQLParser:
 
 
     def parse_create(self):
-        """ CREATE <table_name> (col_name col_type, ...)
+        """ CREATE TABLE <table_name> (col_name col_type, ...)
             Parses statement. Returns table name and dict of column names and type
         """
         if self.tokens[1] != 'TABLE':
@@ -54,12 +54,33 @@ class SQLParser:
             raise ValueError("Malformed CREATE statement: no opening parenthesis")
         else:
             i = 4
-            while i < len(self.tokens) and self.tokens[i] != '(' and self.tokens[i] != ')':
+            while i < len(self.tokens) and self.tokens[i] != ')':
                 columns[self.tokens[i]] = self.tokens[i+1]
                 i += 2
                 if self.tokens[i] == ',':
                     i += 1
-            if i == len(self.tokens) or self.tokens[i] != ')':
+            if i == len(self.tokens) or self.tokens[i] != ')': # TODO: should this be an "and"? Do we need the first part of the conditional? How does it help?
                 raise ValueError("Malformed CREATE Statement: no closing parenthesis")
 
         return {'type': 'CREATE', 'table': table_name, 'columns': columns}
+
+
+    def parse_insert(self):
+        """ INSERT INTO <table_name> (value1, value2, ...)
+            Parses Insert statement. Returns table name and an array of values to insert
+        """
+        if self.tokens[1] != 'INTO':
+            raise ValueError("Invalid INSERT statement: No INTO keyword")
+        
+        table_name = self.tokens[2]
+        values = {}
+        if self.tokens[3] != '(':
+            raise ValueError("Malformed INSERT statement: no opening parenthsis")
+        else:
+            values_array = self.tokens[4:-1]
+            print(f"values_array: {values_array}")
+            values_string = ''.join(values_array)
+            print(f"values_string: {values_string}")
+            
+
+        return{'type': 'INSERT', 'table': table_name, 'values': values}

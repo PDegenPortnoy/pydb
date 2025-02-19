@@ -22,20 +22,23 @@ from commands.table_node import TableNode
 class Table:
     def __init__(self, ):
         self.tables = []
-        self.create('users', None)
+        # self.create('users', None)
 
 
     def create(self, table_name, the_table_definition):
-        # Hack to auto-define the Users table
-        id_field = Field("id", 7, int)
-        user_name_field = Field("user_name", 16, str)
-        email_field = Field("email", 32, str)
-        the_table_definition = TableDefinition(
-                                id_field,
-                                user_name_field,
-                                email_field,
-                                )
-        self.tables.append(TableNode('users', the_table_definition))
+        """
+        Takes a table name and a dict with the table definition.
+        The Command class uses the SQLParser to parse the user input
+        The Command class invokes Table.create() with the table definition, which
+        is an array of Fields. Fields are column_name, column_size (using default values currently),
+        and column_type.
+        """
+        print(f"Table.create() table_name: {table_name}, the_table_definition: {the_table_definition}")
+        for elem in the_table_definition:
+            print(f"   elem.name: {elem.name}, elem.size: {elem.size}, elem.type: {elem.type}")
+
+        table_definition = TableDefinition(the_table_definition)
+        self.tables.append(TableNode('users', table_definition))
         
 
     def insert(self, user_input: str) -> None:

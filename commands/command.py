@@ -11,16 +11,17 @@ __version__ = "0.0.1"
 
 import sys
 from commands.table import Table
+from commands.sql_parser import SQLParser
+from commands.field import Field
 
 class Command:
     def __init__(self):
         # TODO: create the system table that holds table metadata
-        self.tables = None
+        self.tables = []
 
     def process(self, user_input: str):
-        # print(f"Command was '{user_input}'")
-
         command = SQLParser(user_input).parse()
+        print(f"Command.process: command is {command}")
         
         if command['type'] == 'EXIT':
             self.process_exit()
@@ -40,20 +41,26 @@ class Command:
 
     def process_create(self, command: dict) -> None:
         fields = []
-        for key, value in command['columns']:
+        print(f"process_create: command['columns']: {command['columns']}")
+        for key, value in command['columns'].items():
+            print(f"process_create. key: {key}, value: {value}")
             default_size, data_type = self.get_size_and_type(value)
             field = Field(key, default_size, data_type)
             fields.append(field)
-        self.table.create(command['table'], fields)
+        table = Table()
+        table.create(command['table'], fields)
+        self.tables.append(table)
 
 
     def process_select(self, command: dict) -> None:
         table = command['table']
-        self.table.select(user_input)
+        table = self.tables[0]
+        table.select(command)
 
 
-    def process_insert(self, user_input: str) -> None:
-        self.table.insert(user_input)
+    def process_insert(self, command: dict) -> None:
+        table = self.tables[0]
+        table.insert(command)
 
 
     def process_unrecognized(self, user_input: str) -> None:
@@ -61,9 +68,9 @@ class Command:
 
 
     def get_size_and_type(self, data_type_string: str) -> set:
-        if data_type_string == 'int':
+        if data_type_string == 'INT':
             return 32, int
-        elif data_type_string == 'str':
+        elif data_type_string == 'STRING':
             return 32, str
         else:
             raise ValueError(f"Unknown data type, {data_type_string}")
