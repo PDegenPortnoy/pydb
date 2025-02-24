@@ -73,7 +73,7 @@ class SQLParser:
             raise ValueError("Invalid INSERT statement: No INTO keyword")
         
         table_name = self.tokens[2]
-        values = {}
+        values = {} 
         if self.tokens[3] != '(':
             raise ValueError("Malformed INSERT statement: no opening parenthsis")
         else:
@@ -81,6 +81,6 @@ class SQLParser:
             print(f"values_array: {values_array}")
             values_string = ''.join(values_array)
             print(f"values_string: {values_string}")
-            
+            values_array = values_string.split(',')
 
-        return{'type': 'INSERT', 'table': table_name, 'values': values}
+        return{'type': 'INSERT', 'table': table_name, 'values': values_array}

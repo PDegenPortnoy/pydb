@@ -21,8 +21,7 @@ from commands.table_node import TableNode
 
 class Table:
     def __init__(self, ):
-        self.tables = []
-        # self.create('users', None)
+        self.table_nodes = [] 
 
 
     def create(self, table_name, the_table_definition):
@@ -33,17 +32,17 @@ class Table:
         is an array of Fields. Fields are column_name, column_size (using default values currently),
         and column_type.
         """
-        print(f"Table.create() table_name: {table_name}, the_table_definition: {the_table_definition}")
-        for elem in the_table_definition:
-            print(f"   elem.name: {elem.name}, elem.size: {elem.size}, elem.type: {elem.type}")
+        # print(f"Table.create() table_name: {table_name}, the_table_definition: {the_table_definition}")
+        # for elem in the_table_definition:
+        #     print(f"   elem.name: {elem.name}, elem.size: {elem.size}, elem.type: {elem.type}")
 
         table_definition = TableDefinition(the_table_definition)
-        self.tables.append(TableNode('users', table_definition))
+        self.table_nodes.append(TableNode('users', table_definition))
         
 
     def insert(self, user_input: str) -> None:
         """
-        Expecting "insert <id> <user_name> <email>"
+        Expecting "INSERT INTO <table_name> (value1, value2, ...)"
         """
         _, id, user_name, email = user_input.split()
         users_table = self._get_table_by_name('users')
@@ -51,7 +50,7 @@ class Table:
         user_name_field = RowField('user_name', 16, str, user_name)
         email_field = RowField('email', 32, str, email)
         the_row = Row(id_field, user_name_field, email_field)
-        self._add_node('users', the_row)
+        self._add_row('users', the_row)
         print(f"Added row with id: {the_row.get_id()}.")
 
 
@@ -87,7 +86,7 @@ class Table:
 
 
 
-    def _add_node(self, table_name, row: Row) -> int:
+    def _add_row(self, table_name, row: Row) -> int:
         the_table = self._get_table_by_name(table_name)
         if the_table.root.child_node == None:
             leaf = the_table.root

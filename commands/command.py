@@ -11,6 +11,7 @@ __version__ = "0.0.1"
 
 import sys
 from commands.table import Table
+from commands.table_node import TableNode
 from commands.sql_parser import SQLParser
 from commands.field import Field
 
@@ -48,18 +49,19 @@ class Command:
             field = Field(key, default_size, data_type)
             fields.append(field)
         table = Table()
-        table.create(command['table'], fields)
-        self.tables.append(table)
+        table = table.create(command['table'], fields)
+        self.table.append(table)
 
 
     def process_select(self, command: dict) -> None:
-        table = command['table']
-        table = self.tables[0]
-        table.select(command)
+        table = self._find_table(command['table'])
+        results = table.select(command) # Note: This works only for result sets up to a certain size
+        TablePrinter().print_results(table, results)
 
 
     def process_insert(self, command: dict) -> None:
-        table = self.tables[0]
+        print(f"Command.process_insert() command: {command}")
+        table = self._find_table_node(command['table'])
         table.insert(command)
 
 
@@ -76,4 +78,9 @@ class Command:
             raise ValueError(f"Unknown data type, {data_type_string}")
 
 
+    def _find_table_node(self, table_name: str) -> Table:
+        for table_node in self.table_nodes:
+            if table_node.table_name == table_name:
+                return table_node
 
+        return None 
