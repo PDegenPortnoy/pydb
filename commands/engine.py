@@ -1,5 +1,5 @@
 """
-commands/commands.py
+commands/engine.py
 
 Receives commands and determines what to do with them
 """
@@ -15,14 +15,17 @@ from commands.table_node import TableNode
 from commands.sql_parser import SQLParser
 from commands.field import Field
 
-class Command:
+class TableNotFoundError(Exception):
+    pass
+
+class Engine:
     def __init__(self):
         # TODO: create the system table that holds table metadata
         self.tables = []
 
     def process(self, user_input: str):
         command = SQLParser(user_input).parse()
-        print(f"Command.process: command is {command}")
+        print(f"Engine.process: command is {command}")
         
         if command['type'] == 'EXIT':
             self.process_exit()
@@ -44,25 +47,26 @@ class Command:
         fields = []
         print(f"process_create: command['columns']: {command['columns']}")
         for key, value in command['columns'].items():
-            print(f"process_create. key: {key}, value: {value}")
+            # print(f"process_create. key: {key}, value: {value}")
             default_size, data_type = self.get_size_and_type(value)
             field = Field(key, default_size, data_type)
             fields.append(field)
         table = Table()
         table = table.create(command['table'], fields)
-        self.table.append(table)
+        self.tables.append(table)
+        self._show_tables()
+
+
+    def process_insert(self, command: dict) -> None:
+        print(f"Engine.process_insert() command: {command}")
+        table = self._find_table_node(command['table'])
+        table.insert(command)
 
 
     def process_select(self, command: dict) -> None:
         table = self._find_table(command['table'])
         results = table.select(command) # Note: This works only for result sets up to a certain size
         TablePrinter().print_results(table, results)
-
-
-    def process_insert(self, command: dict) -> None:
-        print(f"Command.process_insert() command: {command}")
-        table = self._find_table_node(command['table'])
-        table.insert(command)
 
 
     def process_unrecognized(self, user_input: str) -> None:
@@ -79,8 +83,15 @@ class Command:
 
 
     def _find_table_node(self, table_name: str) -> Table:
-        for table_node in self.table_nodes:
-            if table_node.table_name == table_name:
-                return table_node
+        for table in self.tables:
+            if table.name == table_name:
+                return table
+        raise TableNotFoundError(f"Could not find table '{table_name}'")
 
-        return None 
+
+    def _show_tables(self):
+        for table in self.tables:
+            print(f"Table: {table.name}, number of rows: {len(table.row_nodes)}")
+            for field in table.table_definition.fields:
+                print(f"  name: {field['name']}, size: {field['size']}, type: {field['type']}")
+

@@ -18,28 +18,35 @@ Following the "Let's Build A Simple Database" approach, I am starting with a REP
 
 I've started working on a command parser, which is in the SQLParser class in `commands/sql_parser.py`. It currently parses the CREATE statement and returns a dict with the command, table, and a dict of columns. I just noticed that the RowField includes `field_size`, but the SQLParser is just looking for field name and type, so that needs to be addressed. First, however, is to get the SQLParser to parse the input line and return the dict to the Table.create() method and for the table to be dynamically created.
 
-# REPL
+# Design
+The top level class will be the REPL, which will create and own the Engine. The Engine owns an array of Tables. The Table owns root RowNode, which is a linked list of RowNodes. When commands are issued, the Engine uses the SQLParser to parse the command and then invokes the corresponding internal action method.
+
+When CREATE is used, the Engine first checks that the table isn't already defined and, if not, then creates the table with the parsed table definition.
+
+When SELECT or INSERT is used (and someday, DELETE and UPDATE), the Engine will find the table and pass the command with parameters to the Table. Below is a sequence diagram of the Insert Cycle:
+
+![Insert Cycle](./images/sequence_diagram_insert_row.png)
+
+# Components
+## REPL
 
 The REPL (Read, Eval, Print, Loop) will provide the foundation for starting on our database. We'll need a main function that prints a prompt to the screen, reads the input and acts on it. 
 
 To run the repl, use `./pydb.py` from the project root directory
 
-# Commands
+## Engine
 
-The Simple Database reference uses Sqlite, which uses a "." to indicate a meta command, such as `.table` or `.exit`. I don't think I want to do that. I would like to have a meta-table with table data so that one could do `SELECT * from db_tables` and `DESCRIBE <table_name>` to get table details from the meta-table. Therefore, the Commands module can be simpler than the reference, which processes meta commands and SQL commands differently. 
+The Simple Database reference uses Sqlite, which uses a "." to indicate a meta command, such as `.table` or `.exit`. I don't think I want to do that. I would like to have a meta-table with table data so that one could do `SELECT * from db_tables` and `DESCRIBE <table_name>` to get table details from the meta-table. Therefore, the Engine module can be simpler than the reference, which processes meta commands and SQL commands differently. 
+    
+## Table
+The Table will own a linked list of RowNodes. Each RowNode will contain a RowField, with the name and value of the RowField. The size and type of the RowField is stored in the Table Definition.
 
-First implementation will be of a hard-coded table `default` with the following schema:
-
-    | ID | Username       | email               |
-    |____|________________|____________________ |
-    | 1  | Peter          | peter@example.com   |
-
-## Requirements
+# Requirements
 1. CREATE <table_name> (<column_name> <column_type>, ...) will create a table with the define table attributes
 1. INSERT INTO <table_name> (<column_name1>, ...) VALUES (<value1>, ...) will insert a record into the table with the provided values
 1. SELECT * FROM <table_name> will select all the records from the table listed
 
-### Current Functionality
+## Current Functionality
 Note: no punctuation. Currently displays a "db: " prompt and accepts the commands indicated below. The table is now defined at creation in the Table class. (That needs to be moved to the user.) Display uses the RowField attributes to display the row field value.
 
 Usage:

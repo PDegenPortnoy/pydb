@@ -21,7 +21,9 @@ from commands.table_node import TableNode
 
 class Table:
     def __init__(self, ):
-        self.table_nodes = [] 
+        self.table_definition = None
+        self.name = None
+        self.row_nodes = [] 
 
 
     def create(self, table_name, the_table_definition):
@@ -36,9 +38,10 @@ class Table:
         # for elem in the_table_definition:
         #     print(f"   elem.name: {elem.name}, elem.size: {elem.size}, elem.type: {elem.type}")
 
-        table_definition = TableDefinition(the_table_definition)
-        self.table_nodes.append(TableNode('users', table_definition))
-        
+        self.name = table_name
+        self.table_definition = TableDefinition(the_table_definition)
+        return self
+ 
 
     def insert(self, user_input: str) -> None:
         """
@@ -63,7 +66,7 @@ class Table:
 
         # Use the table definition to print the names of the fields and an underbar
         header_row = ""
-        column_definitions = the_table.table_definition
+        column_definitions = self.table_definition
         for field in column_definitions.fields:
             name_length = len(field['name'])
             col_size = field['size']
@@ -87,8 +90,7 @@ class Table:
 
 
     def _add_row(self, table_name, row: Row) -> int:
-        the_table = self._get_table_by_name(table_name)
-        if the_table.root.child_node == None:
+        if self.root.child_node == None:
             leaf = the_table.root
         else:
             leaf = self._get_leaf(the_table)

@@ -8,11 +8,11 @@ __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
 import sys
-from commands.command import Command
+from commands.engine import Engine 
 
 class REPL:
     def __init__(self):
-        self.commander = Command()
+        self.engine = Engine()
 
 
     def run(self) -> None:
@@ -22,7 +22,7 @@ class REPL:
         while True:
             self.print_prompt()
             user_input = sys.stdin.readline().strip()
-            self.commander.process(user_input)
+            self.engine.process(user_input)
     
 
     def print_prompt(self) -> None:
