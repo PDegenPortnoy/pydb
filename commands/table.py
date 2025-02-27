@@ -24,6 +24,7 @@ class Table:
         self.table_definition = None
         self.name = None
         self.row_nodes = [] 
+        self.root = RowNode(None, None)
 
 
     def create(self, table_name, the_table_definition):
@@ -46,15 +47,20 @@ class Table:
     def insert(self, user_input: str) -> None:
         """
         Expecting "INSERT INTO <table_name> (value1, value2, ...)"
+        This Table class is the one with the correct table_name, so the work
+        is to parse the the values and create RowFields for each one.
+        Then add the RowFields to a Row and save the Row
         """
-        _, id, user_name, email = user_input.split()
-        users_table = self._get_table_by_name('users')
-        id_field = RowField('id', 7, int, id)
-        user_name_field = RowField('user_name', 16, str, user_name)
-        email_field = RowField('email', 32, str, email)
-        the_row = Row(id_field, user_name_field, email_field)
-        self._add_row('users', the_row)
-        print(f"Added row with id: {the_row.get_id()}.")
+        fields = []
+        for i, value in enumerate(user_input['values']):
+            # Get the the details from the table_definition.fields
+            fields = self.table_definition.fields
+            field_name, field_size, field_type = fields[i]['name'], fields[i]['size'], fields[i]['type']
+            print(f"Table.insert(). field_name: {field_name}, field_size: {field_size}, field_type: {field_type}")
+            row_field = RowField(field_name, value)
+            print(f"Table.insert(). row_field: {row_field.field_name}, {row_field.value}")
+            fields.append(row_field)
+        self._add_row(Row(fields))
 
 
     def select(self, user_input: str) -> None:
@@ -89,16 +95,17 @@ class Table:
 
 
 
-    def _add_row(self, table_name, row: Row) -> int:
+    def _add_row(self, row: Row) -> int:
         if self.root.child_node == None:
-            leaf = the_table.root
+            leaf = self.root
         else:
             leaf = self._get_leaf(the_table)
         leaf.row = row
         leaf.child_node = RowNode(None, None)
 
+
     def _get_leaf(self, the_table) -> RowNode:
-        node = the_table.root 
+        node = self.root 
         while node.child_node != None:
             node = node.child_node
         return node

@@ -19,6 +19,6 @@ __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
 class RowField:
-    def __init__(self, field_name, field_size, field_type, value = None):
+    def __init__(self, field_name, value = None):
         self.field_name = field_name
         self.value = value

@@ -45,7 +45,7 @@ class Engine:
 
     def process_create(self, command: dict) -> None:
         fields = []
-        print(f"process_create: command['columns']: {command['columns']}")
+        # print(f"process_create: command['columns']: {command['columns']}")
         for key, value in command['columns'].items():
             # print(f"process_create. key: {key}, value: {value}")
             default_size, data_type = self.get_size_and_type(value)
@@ -54,7 +54,8 @@ class Engine:
         table = Table()
         table = table.create(command['table'], fields)
         self.tables.append(table)
-        self._show_tables()
+        # self._show_tables()
+        print(f"Created table '{command['table']}'")
 
 
     def process_insert(self, command: dict) -> None:

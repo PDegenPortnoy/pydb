@@ -15,16 +15,10 @@ __version__ = "0.0.1"
 from commands.row_field import RowField 
 
 class Row:
-    def __init__(self, *row_fields: [RowField]):
+    def __init__(self, row_fields: [RowField]):
         self.row_fields = []
         for rf in row_fields:
-            field = RowField(
-                        rf.field_name,
-                        rf.field_size,
-                        rf.field_type,
-                        rf.value,
-                        )
-            self.row_fields.append(field)
+            self.row_fields.append(rf)
 
 
     def get_id(self):
