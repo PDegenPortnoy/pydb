@@ -14,6 +14,7 @@ from commands.table import Table
 from commands.table_node import TableNode
 from commands.sql_parser import SQLParser
 from commands.field import Field
+from utils.printer import Printer
 
 class TableNotFoundError(Exception):
     pass
@@ -25,7 +26,7 @@ class Engine:
 
     def process(self, user_input: str):
         command = SQLParser(user_input).parse()
-        print(f"Engine.process: command is {command}")
+        # print(f"Engine.process: command is {command}")
         
         if command['type'] == 'EXIT':
             self.process_exit()
@@ -59,15 +60,18 @@ class Engine:
 
 
     def process_insert(self, command: dict) -> None:
-        print(f"Engine.process_insert() command: {command}")
-        table = self._find_table_node(command['table'])
+        # print(f"Engine.process_insert() command: {command}")
+        table = self._find_table(command['table'])
         table.insert(command)
+        print("Inserted record")
 
 
     def process_select(self, command: dict) -> None:
         table = self._find_table(command['table'])
         results = table.select(command) # Note: This works only for result sets up to a certain size
-        TablePrinter().print_results(table, results)
+        Printer.print_header(table)
+        for row in results:
+            Printer.print_row(table, row)
 
 
     def process_unrecognized(self, user_input: str) -> None:
@@ -83,7 +87,7 @@ class Engine:
             raise ValueError(f"Unknown data type, {data_type_string}")
 
 
-    def _find_table_node(self, table_name: str) -> Table:
+    def _find_table(self, table_name: str) -> Table:
         for table in self.tables:
             if table.name == table_name:
                 return table
@@ -92,7 +96,7 @@ class Engine:
 
     def _show_tables(self):
         for table in self.tables:
-            print(f"Table: {table.name}, number of rows: {len(table.row_nodes)}")
+            print(f"Table: {table.name}, number of rows: {table.number_rows()}")
             for field in table.table_definition.fields:
                 print(f"  name: {field['name']}, size: {field['size']}, type: {field['type']}")
 

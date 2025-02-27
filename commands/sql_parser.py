@@ -78,9 +78,22 @@ class SQLParser:
             raise ValueError("Malformed INSERT statement: no opening parenthsis")
         else:
             values_array = self.tokens[4:-1]
-            print(f"values_array: {values_array}")
+            # print(f"values_array: {values_array}")
             values_string = ''.join(values_array)
-            print(f"values_string: {values_string}")
+            # print(f"values_string: {values_string}")
             values_array = values_string.split(',')
 
         return{'type': 'INSERT', 'table': table_name, 'values': values_array}
+
+
+    def parse_select(self):
+        """ SELECT * FROM <table_name>
+            Parses Select statement. Doesn't handle filtering by column names yet
+        """
+        if self.tokens[1] != "*":
+            raise ValueError("Invalid SELECT statement: only handles SELECT *")
+        elif self.tokens[2] != "FROM":
+            raise ValueError("Invalid SELECT statement: missing FROM")
+
+        table_name = self.tokens[3]
+        return{'type': 'SELECT', 'table': table_name, 'columns': '*'}

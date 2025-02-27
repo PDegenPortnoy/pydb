@@ -23,7 +23,6 @@ class Table:
     def __init__(self, ):
         self.table_definition = None
         self.name = None
-        self.row_nodes = [] 
         self.root = RowNode(None, None)
 
 
@@ -35,11 +34,8 @@ class Table:
         is an array of Fields. Fields are column_name, column_size (using default values currently),
         and column_type.
         """
-        # print(f"Table.create() table_name: {table_name}, the_table_definition: {the_table_definition}")
-        # for elem in the_table_definition:
-        #     print(f"   elem.name: {elem.name}, elem.size: {elem.size}, elem.type: {elem.type}")
-
         self.name = table_name
+        # print(f"Table.create(). the_table_definitions: {the_table_definition}")
         self.table_definition = TableDefinition(the_table_definition)
         return self
  
@@ -51,47 +47,31 @@ class Table:
         is to parse the the values and create RowFields for each one.
         Then add the RowFields to a Row and save the Row
         """
-        fields = []
+        row_fields = []
         for i, value in enumerate(user_input['values']):
             # Get the the details from the table_definition.fields
             fields = self.table_definition.fields
             field_name, field_size, field_type = fields[i]['name'], fields[i]['size'], fields[i]['type']
-            print(f"Table.insert(). field_name: {field_name}, field_size: {field_size}, field_type: {field_type}")
+            # print(f"Table.insert(). field_name: {field_name}, field_size: {field_size}, field_type: {field_type}")
             row_field = RowField(field_name, value)
-            print(f"Table.insert(). row_field: {row_field.field_name}, {row_field.value}")
-            fields.append(row_field)
-        self._add_row(Row(fields))
+            # print(f"Table.insert(). row_field: {row_field.field_name}, {row_field.value}")
+            row_fields.append(row_field)
+        self._add_row(Row(row_fields))
 
 
     def select(self, user_input: str) -> None:
         """
-        Uses the default table root
+        Expecting "SELECT * FROM <table_name>"
+        Will have to add support for seleting discrete fields only
+        Returns an array of Rows
         """
-        the_table = self._get_table_by_name('users') # TODO: This has to be parsed from input
-        node = the_table.root
-
-        # Use the table definition to print the names of the fields and an underbar
-        header_row = ""
-        column_definitions = self.table_definition
-        for field in column_definitions.fields:
-            name_length = len(field['name'])
-            col_size = field['size']
-            padding = (col_size - name_length) // 2 # assumes the name with fit in the size
-            header_row += "|" + " " * padding
-            header_row += f"{field['name']}"
-            header_row += " " * padding
-            if (col_size - name_length) % 2 != 0:
-                header_row += " "
-        header_row += "|"
-        print(header_row)
-        divider_row = ""
-        for field in column_definitions.fields:
-            divider_row += "|" + "-" * field['size']
-        divider_row += "|"
-        print(divider_row)
+        node = self.root
+        
+        results = []
         while node.row != None:
-            print(f"|{node.row.format_for_printing('id')}|{node.row.format_for_printing('user_name')}|{node.row.format_for_printing('email')}|")
+            results.append(node.row)
             node = node.child_node
+        return results
 
 
 
@@ -99,12 +79,12 @@ class Table:
         if self.root.child_node == None:
             leaf = self.root
         else:
-            leaf = self._get_leaf(the_table)
+            leaf = self._get_leaf()
         leaf.row = row
         leaf.child_node = RowNode(None, None)
 
 
-    def _get_leaf(self, the_table) -> RowNode:
+    def _get_leaf(self) -> RowNode:
         node = self.root 
         while node.child_node != None:
             node = node.child_node
@@ -115,3 +95,10 @@ class Table:
         return self.tables[0] # This is the default 'users' table
 
 
+    def number_rows(self):
+        count = 0
+        node = self.root
+        while node.child_node != None:
+            count += 1
+            node = node.child_node
+        return count
