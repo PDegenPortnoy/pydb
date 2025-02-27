@@ -38,4 +38,16 @@ class Printer:
         
 
     def print_row(table, row):
-        print(f"printing row: {row}") 
+        # Get the field size from the Table for each RowField
+        row_string = '|'
+        for row_field in row.row_fields:
+            table_field = table.get_field_by_name(row_field.field_name)
+            value_size = len(str(row_field.value))
+            padding_size = (int(table_field['size']) - value_size) // 2
+            row_string += ' ' * padding_size
+            row_string += str(row_field.value)
+            row_string += ' ' * padding_size
+            if (int(table_field['size']) - value_size) %2 != 0:
+                row_string += ' '
+            row_string += '|'
+        print(row_string)

@@ -102,3 +102,10 @@ class Table:
             count += 1
             node = node.child_node
         return count
+
+
+    def get_field_by_name(self, field_name):
+        for field in self.table_definition.fields:
+            if field['name'].upper() == field_name.upper():
+                return field
+        raise NameError(f"{field_name} was not found in table_definition") 
