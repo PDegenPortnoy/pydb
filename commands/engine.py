@@ -10,11 +10,14 @@ __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
 import sys
+import pickle
+from pathlib import Path
 from commands.table import Table
 from commands.table_node import TableNode
 from commands.sql_parser import SQLParser
 from commands.field import Field
 from utils.printer import Printer
+
 
 class TableNotFoundError(Exception):
     pass
@@ -45,18 +48,23 @@ class Engine:
 
 
     def process_create(self, command: dict) -> None:
-        fields = []
-        # print(f"process_create: command['columns']: {command['columns']}")
-        for key, value in command['columns'].items():
-            # print(f"process_create. key: {key}, value: {value}")
-            default_size, data_type = self.get_size_and_type(value)
-            field = Field(key, default_size, data_type)
-            fields.append(field)
-        table = Table()
-        table = table.create(command['table'], fields)
-        self.tables.append(table)
-        # self._show_tables()
-        print(f"Created table '{command['table']}'")
+        try: 
+            table = self._find_table(command['table']) 
+            print(f"Table \'{command['table']} \' already exists")
+        except TableNotFounderror:
+            fields = []
+            # print(f"process_create: command['columns']: {command['columns']}")
+            for key, value in command['columns'].items():
+                # print(f"process_create. key: {key}, value: {value}")
+                default_size, data_type = self.get_size_and_type(value)
+                field = Field(key, default_size, data_type)
+                fields.append(field)
+            table = Table()
+            table = table.create(command['table'], fields)
+            self.tables.append(table)
+            self._save_table(table)
+            # self._show_tables()
+            print(f"Created table '{command['table']}'")
 
 
     def process_insert(self, command: dict) -> None:
@@ -67,6 +75,7 @@ class Engine:
             print(tnf)
             return
         table.insert(command)
+        self._save_table(table)
         print("Inserted record")
 
 
@@ -95,6 +104,13 @@ class Engine:
         for table in self.tables:
             if table.name == table_name:
                 return table
+        filename = table_name.upper() + ".tbl"
+        file = Path(filename)
+        if file.exists():
+            with open(filename, 'rb') as f:
+                table = pickle.load(f)
+                self.tables.append(table)
+                return table 
         raise TableNotFoundError(f"Could not find table '{table_name}'")
 
 
@@ -103,4 +119,11 @@ class Engine:
             print(f"Table: {table.name}, number of rows: {table.number_rows()}")
             for field in table.table_definition.fields:
                 print(f"  name: {field['name']}, size: {field['size']}, type: {field['type']}")
+
+
+    def _save_table(self, table):
+        # Open file for writing. Create if not exist
+        filename = table.name + '.tbl'
+        with open(filename, 'wb') as file:
+            pickle.dump(table, file)
 
