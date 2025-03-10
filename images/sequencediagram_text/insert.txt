@@ -1,0 +1,18 @@
+title PyDB Insert Cycle
+
+participant REPL
+participant Engine
+participant Table
+participant RowField
+participant RowNode
+
+REPL->Engine:Process
+Engine->Table:Insert
+
+activate Table
+Table->Table:For Each Field
+Table->RowField:Create RowField
+RowField-->Table:self
+deactivate Table
+Table->RowNode:Add Row(RowFields)
+
