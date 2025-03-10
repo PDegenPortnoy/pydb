@@ -59,8 +59,10 @@ Usage:
 ### Next Steps
 1. Define a size for a Field in Table Create (Done)
 1. Build a SQL Parser to parse CREATE, INSERT, and SELECT statements (Done)
-1. Persist created table and rows to disk
+1. Persist created table and rows to disk (Done)
 	1. I'm getting tired of entering the same SQL commands over and over while testing 😂
+1. Fix the parser to capitalize only the key word tokens
+1. Fix the parser to support spaces in data values 
 1. Constrain data to the field size
 1. Display the size of the field in the SELECT output (Done)
 	1. In order to do this, I would like `Table.create()` to take a `TableDefinition`. The `TableDefinition` contains the configuration information for each of the columns, called `Field`s. 

@@ -11,7 +11,7 @@ __version__ = "0.0.1"
 
 import sys
 import pickle
-from pathlib import Path
+import os
 from commands.table import Table
 from commands.table_node import TableNode
 from commands.sql_parser import SQLParser
@@ -105,8 +105,7 @@ class Engine:
             if table.name == table_name:
                 return table
         filename = table_name.upper() + ".tbl"
-        file = Path(filename)
-        if file.exists():
+        if os.path.exists(filename):
             with open(filename, 'rb') as f:
                 table = pickle.load(f)
                 self.tables.append(table)
