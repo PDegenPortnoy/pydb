@@ -61,7 +61,11 @@ class Engine:
 
     def process_insert(self, command: dict) -> None:
         # print(f"Engine.process_insert() command: {command}")
-        table = self._find_table(command['table'])
+        try:
+            table = self._find_table(command['table'])
+        except TableNotFoundError as tnf:
+            print(tnf)
+            return
         table.insert(command)
         print("Inserted record")
 
