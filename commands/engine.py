@@ -101,8 +101,13 @@ class Engine:
 
 
     def process_delete(self, command: dict) -> None:
-        table = self._find_table(command['table'])
+        try:
+            table = self._find_table(command['table'])
+        except TableNotFoundError as e:
+            print(e)
+            return
         num_deleted = table.delete(command)
+        self._save_table(table)
         print(f"Deleted {num_deleted} records")
 
 

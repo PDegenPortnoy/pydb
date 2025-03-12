@@ -20,6 +20,8 @@ I've started working on a command parser, which is in the SQLParser class in `co
 
 With the SQL Parser now parsing CREATE, INSERT, and SELECT, it's time to add DELETE. I've also added basic persistence for the Table object using the `Pickle` library. That was super easy to implement and take advantage of the `Engine._find_table()` method for the SELECT statement. It's pretty exciting to restart the database engine and have the data that was INSERTed still be there. Required for a basic DB, but exciting to add nonetheless.
 
+DELETE has been implemented and works on any field for the table. 
+
 # Design
 The top level class will be the REPL, which will create and own the Engine. The Engine owns an array of Tables. The Table owns root RowNode, which is a linked list of RowNodes. When commands are issued, the Engine uses the SQLParser to parse the command and then invokes the corresponding internal action method.
 
@@ -64,8 +66,8 @@ Note that multiple tables are supported and persisted to disk.
 1. Define a size for a Field in Table Create (Done)
 1. Build a SQL Parser to parse CREATE, INSERT, and SELECT statements (Done)
 1. Persist created table and rows to disk (Done)
-1. Implement DELETE
-1. Fix the parser to capitalize only the key word tokens
+1. Implement DELETE (Done)
+1. Fix the parser to capitalize only the key word tokens (Done)
 1. Fix the parser to support spaces in data values 
 1. Constrain data to the field size
 1. Display the size of the field in the SELECT output (Done)

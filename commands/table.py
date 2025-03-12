@@ -89,39 +89,35 @@ class Table:
         node = self.root
         count = 0
 
-        # need to build a new linked list because it's dangerous to modify an Iterable while iterating through it
-        new_root = copy.deepcopy(self.root)
-        parent_node = new_root # The parent needs to work with the copy
+        parent_node = self.root
         while True: 
             row = node.row
-            print(f"Table.delete(); row: {row}")
+            # print(f"Table.delete(); row: {row}")
             if row == None:
                 break
             delete_row = False
             for rf in row.row_fields:
-                print(f"Table.delete(); row_field: {rf.field_name}, {rf.value}")
-                print(f"                field: {field}, value: {value}")
+                # print(f"Table.delete(); row_field: {rf.field_name}, {rf.value}")
+                # print(f"       command; field: {field}, value: {value}")
                 if delete_row == True:
                     continue
                 if rf.field_name == field and str(rf.value) == str(value):
                     delete_row = True
             if delete_row:
-                print("Found row to delete!")
+                # print("Found row to delete!")
                 # delete this node by setting the parent.child_node = node.child_node in the new_node list 
-                # if the parent_node is the new_root, then this is the first row and new_root points to the child
+                # if the parent_node and the node are the root, then this is the first row and root needs to point to the child
                 # else, the parent_node.child_node will now point to this node's child_node
-                if parent_node == new_root:
-                    new_root = node.child_node
-                    # No change to the parent. It stays pointing to the new_root
+                if parent_node == self.root and node == self.root:
+                    self.root = node.child_node
                 else:
                     parent_node.child_node = node.child_node
                 node = node.child_node
                 count += 1
             else:
-                parent = node
+                parent_node = node
                 node = node.child_node
                 
-        self.root = new_root     
         return count 
 
 
