@@ -58,7 +58,8 @@ Usage:
 
 1. `CREATE TABLE <table_name> (field1 type, field2 type...)` where `type` is either `int` or `string`
 1. `INSERT INTO <table_name> (value1, value2)`. Note that spaces are not yet correctly handled
-1. `SELECT FROM <table_name>`
+1. `SELECT * FROM <table_name>`
+1. `DELETE FROM <table_name> WHERE <field> = <value>`
 
 Note that multiple tables are supported and persisted to disk.
 
@@ -68,6 +69,7 @@ Note that multiple tables are supported and persisted to disk.
 1. Persist created table and rows to disk (Done)
 1. Implement DELETE (Done)
 1. Fix the parser to capitalize only the key word tokens (Done)
+1. Enhance the SELECT to select only requested fields
 1. Fix the parser to support spaces in data values 
 1. Constrain data to the field size
 1. Display the size of the field in the SELECT output (Done)
