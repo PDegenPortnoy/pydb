@@ -16,12 +16,14 @@ Finally though, I've come across [Let's Build A Simple Database](https://cstack.
 
 Following the "Let's Build A Simple Database" approach, I am starting with a REPL and parsing commands directly.
 
-I've started working on a command parser, which is in the SQLParser class in `commands/sql_parser.py`. It currently parses the CREATE statement and returns a dict with the command, table, and a dict of columns. I just noticed that the RowField includes `field_size`, but the SQLParser is just looking for field name and type, so that needs to be addressed. First, however, is to get the SQLParser to parse the input line and return the dict to the Table.create() method and for the table to be dynamically created.
+I've started working on a command parser, which is in the SQLParser class in `commands/sql_parser.py`. It currently parses the CREATE statement and returns a dict with the command, table, and a dict of columns. I initially implemented the RowField with `field_size`, but the SQLParser is just looking for field name and type, so I am setting a default field size for now. First, however, was to get the SQLParser to parse the input line and return the dict to the Table.create() method and for the table to be dynamically created. On the plus side, the SELECT statement gets the size of each field from the Table object and formats the display correctly. It's a future task to enhance the SQL Parser to take an optional field size.
+
+With the SQL Parser now parsing CREATE, INSERT, and SELECT, it's time to add DELETE. I've also added basic persistence for the Table object using the `Pickle` library. That was super easy to implement and take advantage of the `Engine._find_table()` method for the SELECT statement. It's pretty exciting to restart the database engine and have the data that was INSERTed still be there. Required for a basic DB, but exciting to add nonetheless.
 
 # Design
 The top level class will be the REPL, which will create and own the Engine. The Engine owns an array of Tables. The Table owns root RowNode, which is a linked list of RowNodes. When commands are issued, the Engine uses the SQLParser to parse the command and then invokes the corresponding internal action method.
 
-When CREATE is used, the Engine first checks that the table isn't already defined and, if not, then creates the table with the parsed table definition.
+When CREATE is used, the Engine first checks that the table isn't already defined and, if not, then creates the table with the parsed table definition. If it is, it gets the Table from disk and appends it to the `Engine.tables` attribute.
 
 When SELECT or INSERT is used (and someday, DELETE and UPDATE), the Engine will find the table and pass the command with parameters to the Table. Below is a sequence diagram of the Insert Cycle:
 
@@ -42,25 +44,27 @@ The Simple Database reference uses Sqlite, which uses a "." to indicate a meta c
 The Table will own a linked list of RowNodes. Each RowNode will contain a RowField, with the name and value of the RowField. The size and type of the RowField is stored in the Table Definition.
 
 # Requirements
-1. CREATE <table_name> (<column_name> <column_type>, ...) will create a table with the define table attributes
-1. INSERT INTO <table_name> (<column_name1>, ...) VALUES (<value1>, ...) will insert a record into the table with the provided values
-1. SELECT * FROM <table_name> will select all the records from the table listed
+1. `CREATE <table_name> (<column_name> <column_type>, ...)` will create a table with the defined table attributes. Note that the field sizes will be default values.
+1. `INSERT INTO <table_name> (<column_name1>, ...) VALUES (<value1>, ...)` will insert a record into the table with the provided values
+1. `SELECT * FROM <table_name>` will select all the records from the table listed
+1. `DELETE FROM <table_name> WHERE <field> = <value>` will delete all the records for which the condition is true. Note that there is only one supported condition for now.
 
 ## Current Functionality
-Note: no punctuation. Currently displays a "db: " prompt and accepts the commands indicated below. The table is now defined at creation in the Table class. (That needs to be moved to the user.) Display uses the RowField attributes to display the row field value.
+Currently displays a "db: " prompt and accepts the commands indicated below. The table is now defined at creation in the Table class. (That needs to be moved to the user.) Display uses the RowField attributes to display the row field value.
 
 Usage:
 
-1. insert ID Name Email
-1. select 
-1. exit
+1. `CREATE TABLE <table_name> (field1 type, field2 type...)` where `type` is either `int` or `string`
+1. `INSERT INTO <table_name> (value1, value2)`. Note that spaces are not yet correctly handled
+1. `SELECT FROM <table_name>`
 
+Note that multiple tables are supported and persisted to disk.
 
 ### Next Steps
 1. Define a size for a Field in Table Create (Done)
 1. Build a SQL Parser to parse CREATE, INSERT, and SELECT statements (Done)
 1. Persist created table and rows to disk (Done)
-	1. I'm getting tired of entering the same SQL commands over and over while testing 😂
+1. Implement DELETE
 1. Fix the parser to capitalize only the key word tokens
 1. Fix the parser to support spaces in data values 
 1. Constrain data to the field size

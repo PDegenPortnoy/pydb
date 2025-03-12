@@ -21,7 +21,7 @@ class SQLParser:
     def tokenize(self):
         """ Split query into tokens """
         token_pattern = re.compile(r'\w+|[().,@=*]')
-        return token_pattern.findall(self.query.upper()) # TODO: This capitalizes the user input too, which we do not want. Move the upper() call further down the chain
+        return token_pattern.findall(self.query) # TODO: This capitalizes the user input too, which we do not want. Move the upper() call further down the chain
 
 
     def parse(self):
@@ -29,26 +29,28 @@ class SQLParser:
             raise ValueError("Empty query")
 
         token = self.tokens[0]
-        if token == 'CREATE':
+        if token.upper() == 'CREATE':
             return self.parse_create()   
-        elif token == 'INSERT':
+        elif token.upper() == 'INSERT':
             return self.parse_insert()
-        elif token == 'SELECT':
+        elif token.upper() == 'SELECT':
             return self.parse_select()
-        elif token == 'EXIT':
+        elif token.upper() == 'DELETE':
+            return self.parse_delete()
+        elif token.upper() == 'EXIT':
             return {'type': 'EXIT'}
         else:
-            raise ValueError(f"Unsupported SQL statement: {token}")
+            raise ValueError(f"Unsupported SQL statement: {token.upper()}")
 
 
-    def parse_create(self):
+    def parse_create(self) -> dict:
         """ CREATE TABLE <table_name> (col_name col_type, ...)
             Parses statement. Returns table name and dict of column names and type
         """
-        if self.tokens[1] != 'TABLE':
+        if self.tokens[1].upper() != 'TABLE':
             raise ValueError("Invalid CREATE statement: No TABLE keyword")
 
-        table_name = self.tokens[2]
+        table_name = self.tokens[2].upper()
         columns = {}
         if self.tokens[3] != '(':
             raise ValueError("Malformed CREATE statement: no opening parenthesis")
@@ -65,35 +67,54 @@ class SQLParser:
         return {'type': 'CREATE', 'table': table_name, 'columns': columns}
 
 
-    def parse_insert(self):
+    def parse_insert(self) -> dict:
         """ INSERT INTO <table_name> (value1, value2, ...)
             Parses Insert statement. Returns table name and an array of values to insert
         """
-        if self.tokens[1] != 'INTO':
+        if self.tokens[1].upper() != 'INTO':
             raise ValueError("Invalid INSERT statement: No INTO keyword")
         
-        table_name = self.tokens[2]
+        table_name = self.tokens[2].upper()
         values = {} 
         if self.tokens[3] != '(':
             raise ValueError("Malformed INSERT statement: no opening parenthsis")
         else:
+            # TODO: Need to parse these much more carefully to make sure we haven't lost spaces or changed capitalization. 
+            # Need the original query, which is stored in self.query
             values_array = self.tokens[4:-1]
-            # print(f"values_array: {values_array}")
-            values_string = ''.join(values_array)
-            # print(f"values_string: {values_string}")
+            values_string = ''.join(values_array) # TODO: This looses spaces in values
             values_array = values_string.split(',')
 
         return{'type': 'INSERT', 'table': table_name, 'values': values_array}
 
 
-    def parse_select(self):
+    def parse_select(self) -> dict:
         """ SELECT * FROM <table_name>
             Parses Select statement. Doesn't handle filtering by column names yet
         """
         if self.tokens[1] != "*":
             raise ValueError("Invalid SELECT statement: only handles SELECT *")
-        elif self.tokens[2] != "FROM":
+        elif self.tokens[2].upper() != "FROM":
             raise ValueError("Invalid SELECT statement: missing FROM")
 
-        table_name = self.tokens[3]
+        table_name = self.tokens[3].upper()
         return{'type': 'SELECT', 'table': table_name, 'columns': '*'}
+
+
+    def parse_delete(self) -> dict:
+        """ DELETE FROM <table_name> where <field> = <value>
+            Deletes all the records that match the given condition
+        """
+        if self.tokens[1].upper() != 'FROM':
+            raise ValueError("Invalid DELETE statement: missing FROM")
+        if self.tokens[3].upper() != 'WHERE':
+            raise ValueError("Invalid DELETE statement: missing WHERE")
+        if self.tokens[5] != '=':
+            raise ValueError("Invalid DELETE statement: missing =")
+
+        table_name = self.tokens[2].upper()
+        field, value = self.tokens[4].upper(), self.tokens[6]
+        condition = {field: value}
+        
+        return{'type': 'DELETE', 'table': table_name, 'condition': condition}
+        

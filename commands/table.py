@@ -12,12 +12,14 @@ __copyright__ = "Copyright 2025, Peter Degen-Portnoy"
 __license__ = "See LICENSE file"
 __version__ = "0.0.1"
 
+import copy
 from commands.row import Row
 from commands.row_node import RowNode
 from commands.row_field import RowField
 from commands.table_definition import TableDefinition
 from commands.field import Field
-from commands.table_node import TableNode
+# from commands.table_node import TableNode
+
 
 class Table:
     def __init__(self, ):
@@ -40,7 +42,7 @@ class Table:
         return self
  
 
-    def insert(self, user_input: str) -> None:
+    def insert(self, user_input: dict) -> None:
         """
         Expecting "INSERT INTO <table_name> (value1, value2, ...)"
         This Table class is the one with the correct table_name, so the work
@@ -51,7 +53,7 @@ class Table:
         for i, value in enumerate(user_input['values']):
             # Get the the details from the table_definition.fields
             fields = self.table_definition.fields
-            field_name, field_size, field_type = fields[i]['name'], fields[i]['size'], fields[i]['type']
+            field_name, field_size, field_type = fields[i]['name'].upper(), fields[i]['size'], fields[i]['type']
             # print(f"Table.insert(). field_name: {field_name}, field_size: {field_size}, field_type: {field_type}")
             row_field = RowField(field_name, value)
             # print(f"Table.insert(). row_field: {row_field.field_name}, {row_field.value}")
@@ -59,7 +61,7 @@ class Table:
         self._add_row(Row(row_fields))
 
 
-    def select(self, user_input: str) -> None:
+    def select(self, user_input: dict) -> None:
         """
         Expecting "SELECT * FROM <table_name>"
         Will have to add support for seleting discrete fields only
@@ -74,8 +76,60 @@ class Table:
         return results
 
 
+    def delete(self, user_input: dict) -> int:
+        """
+        Expecting  "DELETE FROM <table_name> WHERE <field> = <value>"
+        User_input will be the dict from the SQL Parser with 'condition' being the 
+        dict of <field>: <value>
+        """
+        field, value = None, None
+        for k, v in user_input['condition'].items():  # There should be only one key and value 
+            field, value = k, v 
+
+        node = self.root
+        count = 0
+
+        # need to build a new linked list because it's dangerous to modify an Iterable while iterating through it
+        new_root = copy.deepcopy(self.root)
+        parent_node = new_root # The parent needs to work with the copy
+        while True: 
+            row = node.row
+            print(f"Table.delete(); row: {row}")
+            if row == None:
+                break
+            delete_row = False
+            for rf in row.row_fields:
+                print(f"Table.delete(); row_field: {rf.field_name}, {rf.value}")
+                print(f"                field: {field}, value: {value}")
+                if delete_row == True:
+                    continue
+                if rf.field_name == field and str(rf.value) == str(value):
+                    delete_row = True
+            if delete_row:
+                print("Found row to delete!")
+                # delete this node by setting the parent.child_node = node.child_node in the new_node list 
+                # if the parent_node is the new_root, then this is the first row and new_root points to the child
+                # else, the parent_node.child_node will now point to this node's child_node
+                if parent_node == new_root:
+                    new_root = node.child_node
+                    # No change to the parent. It stays pointing to the new_root
+                else:
+                    parent_node.child_node = node.child_node
+                node = node.child_node
+                count += 1
+            else:
+                parent = node
+                node = node.child_node
+                
+        self.root = new_root     
+        return count 
+
 
     def _add_row(self, row: Row) -> int:
+        """
+        self.root contains a RowNode, which has a child_node and a row
+        When child_node is None, then we are at the end of the single linked list
+        """
         if self.root.child_node == None:
             leaf = self.root
         else:

@@ -13,7 +13,7 @@ import sys
 import pickle
 import os
 from commands.table import Table
-from commands.table_node import TableNode
+# from commands.table_node import TableNode
 from commands.sql_parser import SQLParser
 from commands.field import Field
 from utils.printer import Printer
@@ -28,8 +28,12 @@ class Engine:
         self.tables = []
 
     def process(self, user_input: str):
-        command = SQLParser(user_input).parse()
-        # print(f"Engine.process: command is {command}")
+        try:
+            command = SQLParser(user_input).parse()
+            # print(f"Engine.process: command is {command}")
+        except ValueError as e:
+            print(e)
+            return
         
         if command['type'] == 'EXIT':
             self.process_exit()
@@ -39,6 +43,8 @@ class Engine:
             self.process_insert(command)
         elif command['type'] == 'SELECT':
             self.process_select(command)
+        elif command['type'] == 'DELETE':
+            self.process_delete(command)
         else:
             self.process_unrecognized(command)
 
@@ -51,7 +57,7 @@ class Engine:
         try: 
             table = self._find_table(command['table']) 
             print(f"Table \'{command['table']} \' already exists")
-        except TableNotFounderror:
+        except TableNotFoundError:
             fields = []
             # print(f"process_create: command['columns']: {command['columns']}")
             for key, value in command['columns'].items():
@@ -71,8 +77,8 @@ class Engine:
         # print(f"Engine.process_insert() command: {command}")
         try:
             table = self._find_table(command['table'])
-        except TableNotFoundError as tnf:
-            print(tnf)
+        except TableNotFoundError as e:
+            print(e)
             return
         table.insert(command)
         self._save_table(table)
@@ -80,11 +86,24 @@ class Engine:
 
 
     def process_select(self, command: dict) -> None:
-        table = self._find_table(command['table'])
+        try:
+            table = self._find_table(command['table'])
+        except TableNotFoundError as e:
+            print(e)
+            return
         results = table.select(command) # Note: This works only for result sets up to a certain size
         Printer.print_header(table)
+        count = 0
         for row in results:
             Printer.print_row(table, row)
+            count += 1
+        print(f"{count} records selected")
+
+
+    def process_delete(self, command: dict) -> None:
+        table = self._find_table(command['table'])
+        num_deleted = table.delete(command)
+        print(f"Deleted {num_deleted} records")
 
 
     def process_unrecognized(self, user_input: str) -> None:
@@ -92,9 +111,9 @@ class Engine:
 
 
     def get_size_and_type(self, data_type_string: str) -> set:
-        if data_type_string == 'INT':
+        if data_type_string.upper() == 'INT':
             return 32, int
-        elif data_type_string == 'STRING':
+        elif data_type_string.upper() == 'STRING':
             return 32, str
         else:
             raise ValueError(f"Unknown data type, {data_type_string}")
