@@ -14,33 +14,37 @@ I then looked at [tinydb](https://github.com/msiemens/tinydb/tree/master) by Mar
 
 Finally though, I've come across [Let's Build A Simple Database](https://cstack.github.io/db_tutorial/parts/part1.html), which starts with the REPL and that seems like a very good place to start.
 
-Following the "Let's Build A Simple Database" approach, I am starting with a REPL and parsing commands directly.
+Following the "Let's Build A Simple Database" approach, I started with a REPL and parsing commands directly. 
 
-I've started working on a command parser, which is in the SQLParser class in `commands/sql_parser.py`. It currently parses the CREATE statement and returns a dict with the command, table, and a dict of columns. I initially implemented the RowField with `field_size`, but the SQLParser is just looking for field name and type, so I am setting a default field size for now. First, however, was to get the SQLParser to parse the input line and return the dict to the Table.create() method and for the table to be dynamically created. On the plus side, the SELECT statement gets the size of each field from the Table object and formats the display correctly. It's a future task to enhance the SQL Parser to take an optional field size.
+I've since built a command parser, which is in the SQLParser class in `commands/sql_parser.py`. It currently parses the CREATE, INSERT, SELECT, and DELETE statements and returns a dict for each different command. Note that I initially implemented the RowField with `field_size` that needs to be used to validate input, but the SQLParser is just looking for field name and type (no `field_size`), so I am setting a default field size for now. 
 
-With the SQL Parser now parsing CREATE, INSERT, and SELECT, it's time to add DELETE. I've also added basic persistence for the Table object using the `Pickle` library. That was super easy to implement and take advantage of the `Engine._find_table()` method for the SELECT statement. It's pretty exciting to restart the database engine and have the data that was INSERTed still be there. Required for a basic DB, but exciting to add nonetheless.
+First task, however, was to get the SQLParser to parse the input line and return the dict to the Table.create() method and for the table to be dynamically created. On the plus side, the SELECT statement gets the size of each field from the Table object and formats the display correctly. It's a future task to enhance the SQL Parser to take an optional field size, as mentioned above.
 
-DELETE has been implemented and works on any field for the table. 
+With the SQL Parser now parsing CREATE, INSERT, and SELECT, I've added DELETE. I've also added basic persistence for the Table object using the `Pickle` library. That was super easy to implement and take advantage of the `Engine._find_table()` method for the SELECT statement. It's pretty exciting to restart the database engine and have the data that was INSERTed still be there. Required for a basic DB, but exciting to add nonetheless.
+
+DELETE has been implemented and works on any field for the table. Please let me know if you find otherwise.
 
 # Design
 The top level class will be the REPL, which will create and own the Engine. The Engine owns an array of Tables. The Table owns root RowNode, which is a linked list of RowNodes. When commands are issued, the Engine uses the SQLParser to parse the command and then invokes the corresponding internal action method.
 
 When CREATE is used, the Engine first checks that the table isn't already defined and, if not, then creates the table with the parsed table definition. If it is, it gets the Table from disk and appends it to the `Engine.tables` attribute.
 
-When SELECT or INSERT is used (and someday, DELETE and UPDATE), the Engine will find the table and pass the command with parameters to the Table. Below is a sequence diagram of the Insert Cycle:
+When SELECT, INSERT, or DELETE is used (and someday, UPDATE), the Engine will find the table and pass the command with parameters to the Table. Below is a sequence diagram of the Insert Cycle:
 
 ![Insert Cycle](./images/sequence_diagram_insert_row.png)
 
 # Components
 ## REPL
 
-The REPL (Read, Eval, Print, Loop) will provide the foundation for starting on our database. We'll need a main function that prints a prompt to the screen, reads the input and acts on it. 
+The REPL (Read, Eval, Print, Loop) will provide the foundation for starting on our database. We'll need a main function that prints a prompt to the screen, reads the input and acts on it.
+
+Future functionality will be to have an API that creates the Table array. Better yet, factor the table array out of the REPL and hold it centrally elsewhere that can be used by either the REPL or the API.
 
 To run the repl, use `./pydb.py` from the project root directory
 
 ## Engine
 
-The Simple Database reference uses Sqlite, which uses a "." to indicate a meta command, such as `.table` or `.exit`. I don't think I want to do that. I would like to have a meta-table with table data so that one could do `SELECT * from db_tables` and `DESCRIBE <table_name>` to get table details from the meta-table. Therefore, the Engine module can be simpler than the reference, which processes meta commands and SQL commands differently. 
+The Simple Database reference uses Sqlite, which uses a "." to indicate a meta command, such as `.table` or `.exit`. I don't think I want to do that. I would like to have meta-table data with table data so that one could `DESCRIBE <table_name>` to get table details from the meta-table data. The metadata *could* be pulled from the Table data in the Table array. Therefore, the Engine module can be simpler than the reference implementation in the Simple Database reference, which processes meta commands and SQL commands differently. 
     
 ## Table
 The Table will own a linked list of RowNodes. Each RowNode will contain a RowField, with the name and value of the RowField. The size and type of the RowField is stored in the Table Definition.
@@ -73,5 +77,5 @@ Note that multiple tables are supported and persisted to disk.
 1. Fix the parser to support spaces in data values 
 1. Constrain data to the field size
 1. Display the size of the field in the SELECT output (Done)
-	1. In order to do this, I would like `Table.create()` to take a `TableDefinition`. The `TableDefinition` contains the configuration information for each of the columns, called `Field`s. 
+	1. In order to do this, I would like `Table.create()` to take a `TableDefinition`. The `TableDefinition` contains the configuration information for each of the columns, each called a `Field`. 
 
